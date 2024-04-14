@@ -10,6 +10,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -90,9 +91,13 @@ public class CourseController {
 
     @GetMapping
     public ResponseEntity<Object> getAllCourses(SpecificationTemplate.CourseSpec spec,
-           @PageableDefault(page = 0, size = 10, sort = "courseId", direction = Sort.Direction.ASC) Pageable pageable) {
+           @PageableDefault(page = 0, size = 10, sort = "courseId", direction = Sort.Direction.ASC) Pageable pageable,
+           @RequestParam(required = false) UUID userId) {
 
-        return ResponseEntity.ok(courseService.findAll(spec, pageable));
+        Specification<CourseModel> specification = userId != null?
+                SpecificationTemplate.courseUserId(userId).and(spec) : spec;
+
+        return ResponseEntity.ok(courseService.findAll(specification, pageable));
     }
 
     @GetMapping("/{courseId}")
