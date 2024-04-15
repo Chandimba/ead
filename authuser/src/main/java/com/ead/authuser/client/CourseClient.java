@@ -3,6 +3,7 @@ package com.ead.authuser.client;
 import com.ead.authuser.dto.CourseDTO;
 import com.ead.authuser.dto.ResponsePageDTO;
 import com.ead.authuser.services.UtilsService;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -32,7 +33,8 @@ public class CourseClient {
     @Value("${ead.api.url.course}")
     String REQUEST_URL_COURSE;
 
-    @Retry(name = "retryInstance", fallbackMethod = "retryFallback")
+    //@Retry(name = "retryInstance", fallbackMethod = "cirduitBreakerFallback")
+    @CircuitBreaker(name = "circuitbreakerInstance"/*, fallbackMethod = "retryFallback"*/)
     public Page<CourseDTO> getAllCoursesByUser(final UUID userId, Pageable pageable) {
 
         ResponseEntity<ResponsePageDTO<CourseDTO>> result = null;
@@ -56,6 +58,12 @@ public class CourseClient {
         log.info("Ending request /courses userId {} ", userId);
 
         return result.getBody();
+    }
+
+    public Page<CourseDTO> cirduitBreakerFallback(final UUID userId, Pageable pageable, Throwable exception) {
+        log.error("Inside cirduit breaker fallback retryFallback, cause - {}", exception.toString());
+        List<CourseDTO> courseDTOS = new ArrayList<>();
+        return new PageImpl<>(courseDTOS);
     }
 
     public Page<CourseDTO> retryFallback(final UUID userId, Pageable pageable, Throwable exception) {
