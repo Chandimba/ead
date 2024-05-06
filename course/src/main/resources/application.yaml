@@ -7,52 +7,55 @@ spring:
   application:
     name: ead-course-service
   config:
-    import: 'configserver:'
+    import: 'optional:configserver:'
   cloud:
     config:
       discovery:
         service-id: ead-config-server
 
-#  datasource:
-#    url: jdbc:postgresql://localhost:5432/ead_course_async
-#    username: postgres
-#    password: root
-#  jpa:
-#    hibernate:
-#      ddl-auto: update
-#      dialect: org.hibernate.dialect.PostgreSQLDialect
-#      jdbc:
-#        lob.non-contextual-creation: true
-#    properties:
-#      hibernate:
-#        show_sql: true
-#        format_sql: true
-#  output:
-#    ansi:
-#      enabled: always
-#  rabbitmq:
-#    addresses: amqps://kwcolbzn:PyX2BbrQyxvU51JXNmtlO0Pv9uE76F6b@fish.rmq.cloudamqp.com/kwcolbzn
-#
-#logging:
-#  level:
-#    com.ead: trace
-#    root: info
-#    org.springframework.web: debug
-#    org.hibernate: info
-#
-#ead:
-#  api:
-#    url:
-#      authuser: 'http://ead-authuser-service/ead-authuser'
-#  broker:
-#    exchange:
-#      userEvent: ead.userevent
-#    queue:
-#      userEventQueue: ead.userevent.ms.course
-#
-#eureka:
-#  client:
-#    service-url:
-#      default-zone: 'http://localhost:8761/eureka'
-#  instance:
-#    hostname: localhost
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ead_course_async
+    username: postgres
+    password: root
+  jpa:
+    hibernate:
+      ddl-auto: update
+      dialect: org.hibernate.dialect.PostgreSQLDialect
+      jdbc:
+        lob.non-contextual-creation: true
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+  output:
+    ansi:
+      enabled: always
+  rabbitmq:
+    addresses: amqps://kwcolbzn:PyX2BbrQyxvU51JXNmtlO0Pv9uE76F6b@fish.rmq.cloudamqp.com/kwcolbzn
+
+logging:
+  level:
+    com.ead: trace
+    root: info
+    org.springframework.web: debug
+    org.hibernate: info
+
+ead:
+  api:
+    url:
+      authuser: 'http://ead-authuser-service/ead-authuser'
+  broker:
+    exchange:
+      userEvent: ead.userevent
+      notificationCommandExhange: ead.notificationcommand
+    queue:
+      userEventQueue: ead.userevent.ms.course
+    key:
+      notificationCommandKey: ms.notification
+
+eureka:
+  client:
+    service-url:
+      default-zone: 'http://localhost:8761/eureka'
+  instance:
+    hostname: localhost
