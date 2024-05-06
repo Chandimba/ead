@@ -35,6 +35,6 @@ public class NotificationModel implements Serializable {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private NotificationStatus status;
+    private NotificationStatus notificationStatus;
 
 }

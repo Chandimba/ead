@@ -38,7 +38,7 @@ public class NotificationConsumer {
         var notificationModel = new NotificationModel();
         BeanUtils.copyProperties(notificationCommandDTO, notificationModel);
         notificationModel.setCreationDate(LocalDateTime.now(ZoneId.of("UTC")));
-        notificationModel.setStatus(NotificationStatus.CREATED);
+        notificationModel.setNotificationStatus(NotificationStatus.CREATED);
 
         notificationService.saveNotification(notificationModel);
     }
