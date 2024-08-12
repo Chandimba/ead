@@ -16,6 +16,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -33,6 +34,7 @@ public class LessonController {
     private final LessonService lessonService;
     private final ModuleService moduleService;
 
+    @PreAuthorize("hasAnyRole('INSTRUCTOR')")
     @PostMapping("/modules/{moduleId}/lessons")
     ResponseEntity<Object> saveLesson(@PathVariable("moduleId") UUID moduleId, @RequestBody @Valid LessonDTO lessonDTO) {
         Optional<ModuleModel> moduleModelOptional = moduleService.findById(moduleId);
@@ -50,6 +52,7 @@ public class LessonController {
         return ResponseEntity.status(HttpStatus.CREATED).body(lessonService.save(lessonModel));
     }
 
+    @PreAuthorize("hasAnyRole('INSTRUCTOR')")
     @DeleteMapping("/modules/{moduleId}/lessons/{lessonId}")
     ResponseEntity<Object> deleteLesson(@PathVariable("moduleId") UUID moduleId,
                                         @PathVariable("lessonId") UUID lessonId) {
@@ -64,6 +67,7 @@ public class LessonController {
         return ResponseEntity.status(HttpStatus.OK).body("Lesson deleted successfully.");
     }
 
+    @PreAuthorize("hasAnyRole('INSTRUCTOR')")
     @PutMapping("/modules/{moduleId}/lessons/{lessonId}")
     ResponseEntity<Object> updateLesson(@PathVariable("moduleId") UUID moduleId,
                                         @PathVariable("lessonId") UUID lessonId,
@@ -84,6 +88,7 @@ public class LessonController {
         return ResponseEntity.status(HttpStatus.OK).body(lessonService.save(moduleModel));
     }
 
+    @PreAuthorize("hasAnyRole('STUDENT')")
     @GetMapping("/modules/{moduleId}/lessons")
     ResponseEntity<Page<LessonModel>> getAllLessons(
             @PathVariable("moduleId") UUID moduleId,
@@ -94,6 +99,7 @@ public class LessonController {
         return ResponseEntity.status(HttpStatus.OK).body(lessonService.findAllByModule(specification, pageable));
     }
 
+    @PreAuthorize("hasAnyRole('STUDENT')")
     @GetMapping("/modules/{moduleId}/lessons/{lessonId}")
     ResponseEntity<Object> getOneLesson(@PathVariable("moduleId") UUID moduleId,
                                         @PathVariable("lessonId") UUID lessonId) {

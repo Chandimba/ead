@@ -14,6 +14,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,6 +34,7 @@ public class CourseController {
     private final CourseService courseService;
     private final CourseValidator courseValidator;
 
+    @PreAuthorize("hasAnyRole('INSTRUCTOR')")
     @PostMapping
     public ResponseEntity<Object> saveCourse(@RequestBody CourseDTO courseDTO, Errors errors) {
         log.debug("POST saveCourse courseDTO received {}", courseDTO.toString());
@@ -54,6 +56,7 @@ public class CourseController {
         return ResponseEntity.status(HttpStatus.CREATED).body(courseService.save(courseModel));
     }
 
+    @PreAuthorize("hasAnyRole('INSTRUCTOR')")
     @DeleteMapping("/{courseId}")
     public ResponseEntity<Object> deleteCourse(@PathVariable("courseId") UUID courseId) {
         Optional<CourseModel> courseModelOptional = courseService.findById(courseId);
@@ -68,6 +71,7 @@ public class CourseController {
 
     }
 
+    @PreAuthorize("hasAnyRole('INSTRUCTOR')")
     @PutMapping("/{courseId}")
     public ResponseEntity<Object> updateCourse(@PathVariable("courseId") UUID courseId,
                                                @RequestBody @Valid CourseDTO courseDTO) {
@@ -89,6 +93,7 @@ public class CourseController {
 
     }
 
+    @PreAuthorize("hasAnyRole('STUDENT')")
     @GetMapping
     public ResponseEntity<Object> getAllCourses(SpecificationTemplate.CourseSpec spec,
            @PageableDefault(page = 0, size = 10, sort = "courseId", direction = Sort.Direction.ASC) Pageable pageable,
@@ -100,6 +105,7 @@ public class CourseController {
         return ResponseEntity.ok(courseService.findAll(specification, pageable));
     }
 
+    @PreAuthorize("hasAnyRole('STUDENT')")
     @GetMapping("/{courseId}")
     public ResponseEntity<Object> getCourseById(@PathVariable("courseId") UUID courseId) {
         Optional<CourseModel> courseModelOptional = courseService.findById(courseId);

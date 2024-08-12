@@ -15,4 +15,5 @@ eureka:
     register-with-eureka: false #para nao registar servico eureka
     fetch-registry: false #para nao buscar um registro eurerka
     service-url:
+      #defaultZone: 'http://localhost:8761/eureka'
       defaultZone: 'http://${ead.serviceRegistry.username}:${ead.serviceRegistry.password}@localhost:8761/eureka'

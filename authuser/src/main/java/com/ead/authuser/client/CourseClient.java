@@ -12,6 +12,8 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -35,9 +37,14 @@ public class CourseClient {
 
     //@Retry(name = "retryInstance", fallbackMethod = "cirduitBreakerFallback")
     @CircuitBreaker(name = "circuitbreakerInstance"/*, fallbackMethod = "retryFallback"*/)
-    public Page<CourseDTO> getAllCoursesByUser(final UUID userId, Pageable pageable) {
+    public Page<CourseDTO> getAllCoursesByUser(final UUID userId, Pageable pageable, String token) {
 
         ResponseEntity<ResponsePageDTO<CourseDTO>> result = null;
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", token);
+
+        HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
 
         String url = REQUEST_URL_COURSE + utilsService.createUrl(userId, pageable);
 
@@ -45,15 +52,12 @@ public class CourseClient {
         log.info("Request URL: {}", url);
         System.out.println("--- Start Request ao Course Microservice ---");
 
-        try {
-            ParameterizedTypeReference<ResponsePageDTO<CourseDTO>> responseType = new ParameterizedTypeReference<>() {};
+        ParameterizedTypeReference<ResponsePageDTO<CourseDTO>> responseType = new ParameterizedTypeReference<>() {};
 
-            result = restTemplate.exchange(url, HttpMethod.GET, null, responseType);
+        result = restTemplate.exchange(url, HttpMethod.GET, entity, responseType);
 
-            log.debug("Response Number Of Elements: {}", result.getBody().getContent().size());
-        } catch (HttpStatusCodeException ex) {
-            log.error("Error request /courses {} ", ex);
-        }
+        log.debug("Response Number Of Elements: {}", result.getBody().getContent().size());
+
 
         log.info("Ending request /courses userId {} ", userId);
 

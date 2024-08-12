@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class NotificationCommandPublisher {
 
-    private RabbitTemplate rabbitTemplate;
+    private final RabbitTemplate rabbitTemplate;
 
     @Value("${ead.broker.exchange.notificationCommandExhange}")
     private String notificationCommandExchange;

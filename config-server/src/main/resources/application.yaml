@@ -7,7 +7,7 @@ spring:
     config:
       server:
         git:
-          uri: https://github.com/Chandimba/ead-config-server-repo.git
+          uri: https://github.com/Chandimba/ead-config-server-repo
           default-label: master
           username: dismao16@gmail.com
           password: ${CONFIG_SERVER_GIT_PASSWORD}
@@ -22,7 +22,8 @@ ead:
 
 eureka:
   client:
-    service-url:
-      default-zone: 'http://${ead.serviceRegistry.username}:${ead.serviceRegistry.password}@localhost:8761/eureka'
-    instance:
-      hostname: localhost
+    serviceUrl:
+      #default-zone: 'http://localhost:8761/eureka'
+      defaultZone: 'http://${ead.serviceRegistry.username}:${ead.serviceRegistry.password}@localhost:8761/eureka'
+  instance:
+    hostname: localhost
