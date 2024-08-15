@@ -5,6 +5,11 @@ spring:
   application:
     name: ead-service-registry
 
+ead:
+  serviceRegistry:
+    username: serviceregistry
+    password: '${SERVICE_REGISTRY_PASSWORD}'
+
 eureka:
   client:
     register-with-eureka: false #para nao registar servico eureka

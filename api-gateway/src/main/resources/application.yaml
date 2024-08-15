@@ -16,6 +16,16 @@ spring:
           uri: lb://EAD-COURSE-SERVICE
           predicates:
             - Path=/ead-course/**
+        - id: notification-service
+          uri: lb://EAD-NOTIFICATION-SERVICE
+          predicates:
+            - Path=/ead-notification/**
+
+ead:
+  serviceRegistry:
+    username: serviceregistry
+    password: '${SERVICE_REGISTRY_PASSWORD}'
+
 eureka:
   client:
     service-url:

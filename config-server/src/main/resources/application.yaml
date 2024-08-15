@@ -10,7 +10,15 @@ spring:
           uri: https://github.com/Chandimba/ead-config-server-repo.git
           default-label: master
           username: dismao16@gmail.com
-          password:
+          password: ${CONFIG_SERVER_GIT_PASSWORD}
+
+ead:
+  configServer:
+    username: configserver
+    password: '${CONFIG_SERVER_PASSWORD}'
+  serviceRegistry:
+    username: serviceregistry
+    password: '${SERVICE_REGISTRY_PASSWORD}'
 
 eureka:
   client:
