@@ -48,39 +48,7 @@ public class AuthenticationController {
                                                @Validated(UserDTO.UserView.RegistrationPost.class)
                                                @JsonView(UserDTO.UserView.RegistrationPost.class) UserDTO userDTO) {
 
-        if(userService.existsByUsername(userDTO.getUsername())) {
-            log.warn("Username {} is already taken", userDTO.getUsername());
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Error: Username is already taken!");
-        }
-
-        if(userService.existsByEmail(userDTO.getEmail())) {
-            log.warn("Email {} is already taken", userDTO.getEmail());
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Error: Email is already taken!");
-        }
-
-        RoleModel roleModel = roleService.findByRoleName(RoleType.ROLE_STUDENT)
-                .orElseThrow(() -> new RuntimeException("Error: Role is not found"));
-
-        userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-
-        var userModel = new UserModel();
-
-        BeanUtils.copyProperties(userDTO, userModel);
-
-        userModel.setUserStatus(UserStatus.ACTIVE);
-        userModel.setUserType(UserType.STUDENT);
-
-        userModel.setCreationDate(LocalDateTime.now(ZoneId.of("UTC")));
-        userModel.setLastUpdateDate(userModel.getCreationDate());
-
-        userModel.getRoles().add(roleModel);
-        userService.saveUser(userModel);
-
-        log.info("POST registerUser saved userId {}", userDTO.getUserId());
-        log.info("Use saved successfully userId {}", userDTO.getUserId());
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(userModel);
-
+        return registerUser(userDTO, RoleType.ROLE_STUDENT);
     }
 
     @PostMapping("/login")
@@ -93,4 +61,51 @@ public class AuthenticationController {
         String jwt = jwtProvider.generateJwt(authentication);
         return ResponseEntity.ok(new JwtDTO(jwt));
     }
+
+    @PostMapping("/signup/admin/usr")
+    public ResponseEntity<Object> registerUserAdmin(@RequestBody
+                                               @Validated(UserDTO.UserView.RegistrationPost.class)
+                                               @JsonView(UserDTO.UserView.RegistrationPost.class) UserDTO userDTO) {
+
+        return registerUser(userDTO, RoleType.ROLE_ADMIN);
+    }
+
+    public ResponseEntity<Object> registerUser(@RequestBody
+                                               @Validated(UserDTO.UserView.RegistrationPost.class)
+                                               @JsonView(UserDTO.UserView.RegistrationPost.class) UserDTO userDTO,
+                                               RoleType roleType) {
+        if(userService.existsByUsername(userDTO.getUsername())) {
+            log.warn("Username {} is already taken", userDTO.getUsername());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Error: Username is already taken!");
+        }
+
+        if(userService.existsByEmail(userDTO.getEmail())) {
+            log.warn("Email {} is already taken", userDTO.getEmail());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Error: Email is already taken!");
+        }
+
+        RoleModel roleModel = roleService.findByRoleName(roleType)
+                .orElseThrow(() -> new RuntimeException("Error: Role is not found"));
+
+        userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+
+        var userModel = new UserModel();
+
+        BeanUtils.copyProperties(userDTO, userModel);
+
+        userModel.setUserStatus(UserStatus.ACTIVE);
+        userModel.setUserType(roleType.getUserType());
+
+        userModel.setCreationDate(LocalDateTime.now(ZoneId.of("UTC")));
+        userModel.setLastUpdateDate(userModel.getCreationDate());
+
+        userModel.getRoles().add(roleModel);
+        userService.saveUser(userModel);
+
+        log.info("POST registerUser saved userId {}", userDTO.getUserId());
+        log.info("Use saved successfully userId {}", userDTO.getUserId());
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(userModel);
+    }
+
 }
